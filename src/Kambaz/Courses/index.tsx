@@ -7,6 +7,8 @@ import Assignments from "./Assignments";
 import AssignmentEditor from "./Assignments/Editor";
 import PeopleTable from "./People/Table";
 import { FaAlignJustify } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import Quizzes from "./Quizzes";
 //import type { Course } from "./reducer";
 
 type Course = {
@@ -25,7 +27,16 @@ export default function Courses() {
   const { cid } = useParams<{ cid: string }>();
   const location = useLocation();
   const courses = useSelector((s: any) => s.coursesReducer.courses);
-  const course = courses.find((c: Course) => c._id === cid);
+  const [course, setCourse] = useState<any>(null);
+  useEffect(() => {
+    const foundCourse = courses.find((c: Course) => c._id === cid);
+    if (foundCourse) {
+      setCourse(foundCourse);
+    } else {
+      setCourse(null);
+    }
+  }, [cid, courses]);
+//  const course = courses.find((c: Course) => c._id === cid);
   if (!course) return <div>Course not found</div>;
 
   return (
@@ -47,6 +58,7 @@ export default function Courses() {
             <Route path="Assignments" element={<Assignments />} />
             <Route path="Assignments/:aid" element={<AssignmentEditor />} />
             <Route path="People" element={<PeopleTable />} />
+            <Route path="Quizzes" element={<Quizzes />} />
           </Routes>
         </div>
       </div>
