@@ -1,7 +1,7 @@
-import { useParams } from "react-router";
+//import { useParams } from "react-router";
 
 export default function Quizzes() {
-    const { cid } = useParams();
+    //const { cid } = useParams();
     
     return (
         <div className="wd-quizzes">
