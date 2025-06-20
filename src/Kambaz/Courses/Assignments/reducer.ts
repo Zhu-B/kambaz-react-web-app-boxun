@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 // import type { PayloadAction } from "@reduxjs/toolkit";
 // import { assignments as dbAssignments } from "../../Database";
-import { v4 as uuidv4 } from "uuid";
 
 // export interface Assignment {
 //   _id: string;
@@ -79,14 +78,8 @@ const assignmentsSlice = createSlice({
   reducers: {
     setAssignments: (state, { payload: assignments }) => {
       state.assignments = assignments;
-    },
-    addAssignment: (state, { payload: assignment }) => {
-      const newAssignment: any = {
-        _id: uuidv4(),
-        title: assignment.title,
-        course: assignment.course,
-      };
-      state.assignments = [...state.assignments, newAssignment] as any;
+    },    addAssignment: (state, { payload: assignment }) => {
+      state.assignments = [...state.assignments, assignment] as any;
     },
     deleteAssignment: (state, { payload: assignmentId }) => {
       state.assignments = state.assignments.filter(

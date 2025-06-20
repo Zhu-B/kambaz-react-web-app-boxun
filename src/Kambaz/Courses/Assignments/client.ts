@@ -20,20 +20,20 @@ const axiosWithCredentials = axios.create({ withCredentials: true });
 // };
 export const updateAssignment = async (assignment: any) => {
     const { data } = await axiosWithCredentials.put(
-        `${COURSES_API}/${assignment._id}`,
+        `${REMOTE_SERVER}/api/assignments/${assignment._id}`,
         assignment
     );
     return data;
 };
 export const deleteAssignment = async (assignmentId: string) => {
   const { data } = await axiosWithCredentials.delete(
-    `${COURSES_API}/${assignmentId}`
+    `${REMOTE_SERVER}/api/assignments/${assignmentId}`
   );
   return data;
 };
 export const fetchAssignmentsForCourse = async (courseId: string) => {
   const { data } = await axiosWithCredentials.get(
-    `${COURSES_API}/${courseId}/Assignments`
+    `${COURSES_API}/${courseId}/assignments`
   );
   return data;
 }
@@ -42,7 +42,7 @@ export const createAssignmentForCourse = async (
   assignment: any
 ) => {
   const { data } = await axiosWithCredentials.post(
-    `${COURSES_API}/${courseId}/Assignments`,
+    `${COURSES_API}/${courseId}/assignments`,
     assignment
   );
   return data;

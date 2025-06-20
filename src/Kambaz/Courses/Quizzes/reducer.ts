@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { v4 as uuidv4 } from "uuid";
 
-// Define the Quiz type (adjust as needed to match your API shape)
 export interface Quiz {
   _id: string;
   title: string;
@@ -12,6 +11,7 @@ export interface Quiz {
   timeLimit?: number;
   totalPoints?: number;
   questionCount?: number;
+  courseId?: string;
 }
 
 interface QuizState {
@@ -43,20 +43,18 @@ const quizzesSlice = createSlice({
     fetchQuizzesFailure(state, { payload }: { payload: string }) {
       state.loading = false;
       state.error = payload;
-    },
-
-    // Create / Add
+    }, 
     addQuiz(state, { payload }: { payload: Partial<Quiz> }) {
       const newQuiz: Quiz = {
         _id: uuidv4(),
         title: payload.title || 'New Quiz',
         description: payload.description || '',
-        published: false,
+        published: payload.published || false,
         availableDate: payload.availableDate,
         dueDate: payload.dueDate,
-        timeLimit: payload.timeLimit,
-        totalPoints: payload.totalPoints,
+        timeLimit: payload.timeLimit,        totalPoints: payload.totalPoints,
         questionCount: 0,
+        courseId: payload.courseId,
       };
       state.list.push(newQuiz);
     },
@@ -79,7 +77,7 @@ const quizzesSlice = createSlice({
       }
     },
 
-    // Select one quiz for details or editing
+    //Select
     setCurrentQuiz(state, { payload }: { payload: Quiz | null }) {
       state.currentQuiz = payload;
       state.error = null;

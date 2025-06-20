@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useParams, useLocation, Navigate, Route, Routes } from "react-router-dom";
 import CourseNavigation from "./Navigation";
 import Home from "./Home";
@@ -9,7 +9,12 @@ import PeopleTable from "./People/Table";
 import { FaAlignJustify } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import Quizzes from "./Quizzes";
-//import type { Course } from "./reducer";
+import QuizEditor from "./Quizzes/Editor";
+import QuizDetails from "./Quizzes/Details";
+import Questions from "./Quizzes/Questions";
+import QuestionEditor from "./Quizzes/QuestionEditor";
+import * as courseClient from "./client";
+import { setCourses } from "./reducer";
 
 type Course = {
   _id: string;
@@ -27,15 +32,30 @@ export default function Courses() {
   const { cid } = useParams<{ cid: string }>();
   const location = useLocation();
   const courses = useSelector((s: any) => s.coursesReducer.courses);
+  const dispatch = useDispatch();
   const [course, setCourse] = useState<any>(null);
+  
   useEffect(() => {
     const foundCourse = courses.find((c: Course) => c._id === cid);
     if (foundCourse) {
       setCourse(foundCourse);
     } else {
-      setCourse(null);
+
+      const fetchCourses = async () => {
+        try {
+          const coursesData = await courseClient.fetchAllCourses();
+          dispatch(setCourses(coursesData));
+
+          const targetCourse = coursesData.find((c: Course) => c._id === cid);
+          setCourse(targetCourse || null);
+        } catch (error) {
+          console.error('Error fetching courses:', error);
+          setCourse(null);
+        }
+      };
+      fetchCourses();
     }
-  }, [cid, courses]);
+  }, [cid, courses, dispatch]);
 //  const course = courses.find((c: Course) => c._id === cid);
   if (!course) return <div>Course not found</div>;
 
@@ -57,8 +77,13 @@ export default function Courses() {
             <Route path="Modules" element={<Modules />} />
             <Route path="Assignments" element={<Assignments />} />
             <Route path="Assignments/:aid" element={<AssignmentEditor />} />
-            <Route path="People" element={<PeopleTable />} />
-            <Route path="Quizzes" element={<Quizzes />} />
+            <Route path="People" element={<PeopleTable />} />            <Route path="Quizzes" element={<Quizzes />} />
+            <Route path="Quizzes/Create" element={<QuizEditor />} />
+            <Route path="Quizzes/:qid/edit" element={<QuizEditor />} />
+            <Route path="Quizzes/:qid/questions" element={<Questions />} />
+            <Route path="Quizzes/:qid/question-new" element={<QuestionEditor />} />
+            <Route path="Quizzes/:qid/question-edit/:questionId" element={<QuestionEditor />} />
+            <Route path="Quizzes/:qid" element={<QuizDetails />} />
           </Routes>
         </div>
       </div>

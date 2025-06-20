@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 import { addAssignment, updateAssignment } from "./reducer";
 import { useState } from "react";
+import * as assignmentsClient from "./client";
 
 export default function AssignmentEditor() {
   const { cid, aid } = useParams<{ cid: string; aid: string }>();
@@ -27,7 +28,7 @@ export default function AssignmentEditor() {
   );
   const [availUntil, setAvailUntil] = useState(""); // no DB field
 
-  function onSave() {
+  async function onSave() {
     const payload = {
       title,
       description,
@@ -38,12 +39,29 @@ export default function AssignmentEditor() {
       assignment_group: existing?.assignment_group || "ASSIGNMENTS",
       course: cid!,
     };
-    if (isNew) {
-      dispatch(addAssignment(payload));
-    } else {
-      dispatch(updateAssignment({ _id: aid!, ...payload }));
+    try {
+      if (isNew) {
+        const newAssignment = await assignmentsClient.createAssignmentForCourse(cid!, payload);
+        // 确保前端store中包含完整数据，即使后端只返回部分数据
+        const completeAssignment = {
+          ...payload,
+          ...newAssignment,
+          assignment_group: payload.assignment_group // 确保assignment_group字段存在
+        };
+        dispatch(addAssignment(completeAssignment));
+      } else {
+        const updatedAssignment = await assignmentsClient.updateAssignment({ _id: aid!, ...payload });
+        const completeUpdatedAssignment = {
+          ...payload,
+          ...updatedAssignment,
+          assignment_group: payload.assignment_group
+        };
+        dispatch(updateAssignment(completeUpdatedAssignment));
+      }
+      navigate(`/Kambaz/Courses/${cid}/Assignments`);
+    } catch (error) {
+      console.error("Error saving assignment:", error);
     }
-    navigate(`/Kambaz/Courses/${cid}/Assignments`);
   }
   return (
     <Container className="py-4" id="wd-assignments-editor">
