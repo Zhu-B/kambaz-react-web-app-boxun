@@ -28,12 +28,13 @@ export default function QuestionEditor() {
     ]);
     const [trueOrFalse, setTrueOrFalse] = useState(true);
     const [acceptableAnswers, setAcceptableAnswers] = useState<string[]>([""]);
-    const [loading, setLoading] = useState(false);
-    useEffect(() => {
+    const [loading, setLoading] = useState(false);    useEffect(() => {
         if (!isNew && questionId) {
+            console.log("Fetching question with ID:", questionId);
             const fetchQuestion = async () => {
                 try {
                     const question = await quizzesClient.getQuestion(questionId);
+                    console.log("Fetched question:", question);
                     setCurrentQuestionId(question._id);
                     setTitle(question.title || "");
                     setBody(question.body || "");
@@ -63,6 +64,9 @@ export default function QuestionEditor() {
                 }
             };
             fetchQuestion();
+        } else if (!isNew) {
+            // If we're not in new mode but don't have questionId, try to get it from URL
+            console.log("No questionId found but not in new mode. URL params:", { questionId, isNew });
         }
     }, [isNew, questionId]);
 
@@ -102,30 +106,30 @@ export default function QuestionEditor() {
         const newAnswers = [...acceptableAnswers];
         newAnswers[index] = value;
         setAcceptableAnswers(newAnswers);
-    };
-
-    useEffect(() => {
-        if (type === 'multiple_choice') {
-            setChoices([
-                { _id: uuidv4(), text: "", isCorrect: false },
-                { _id: uuidv4(), text: "", isCorrect: false }
-            ]);
-        } else if (type === 'fill_in_blank') {
-            setAcceptableAnswers([""]);
+    };    useEffect(() => {
+        if (isNew) {
+            if (type === 'multiple_choice') {
+                setChoices([
+                    { _id: uuidv4(), text: "", isCorrect: false },
+                    { _id: uuidv4(), text: "", isCorrect: false }
+                ]);
+            } else if (type === 'fill_in_blank') {
+                setAcceptableAnswers([""]);
+            }
         }
-    }, [type]);
+    }, [type, isNew]);
 
-    const handleSave = async () => {
-        if (!title.trim()) {
-            alert("Please enter a question title");
-            return;
-        }
+    const handleSave = async () => {if (!title.trim()) {
+        alert("Please enter a question title");
+        return;
+    }
 
-        if (!isNew && !currentQuestionId) {
+    const questionIdToUse = !isNew ? (currentQuestionId || questionId) : undefined;
+        if (!isNew && !questionIdToUse) {
             alert("Error: Question ID not found. Please refresh and try again.");
+            console.error("Missing question ID - currentQuestionId:", currentQuestionId, "questionId:", questionId);
             return;
         }
-
         if (type === 'multiple_choice') {
             const hasCorrectAnswer = choices.some(choice => choice.isCorrect);
             const hasValidChoices = choices.every(choice => choice.text.trim());
@@ -139,7 +143,6 @@ export default function QuestionEditor() {
                 return;
             }
         }
-
         if (type === 'fill_in_blank') {
             const hasValidAnswers = acceptableAnswers.some(answer => answer.trim());
             if (!hasValidAnswers) {
@@ -154,21 +157,25 @@ export default function QuestionEditor() {
             points,
             quizId: qid!
         };
-
         if (type === 'multiple_choice') {
-            (questionData as any).choices = choices.filter(choice => choice.text.trim());
+            questionData.choices = choices.filter(choice => choice.text.trim());
         } else if (type === 'true_false') {
-            (questionData as any).trueOrFalse = trueOrFalse;
+            questionData.trueOrFalse = trueOrFalse;
         } else if (type === 'fill_in_blank') {
-            (questionData as any).acceptableAnswers = acceptableAnswers.filter(answer => answer.trim());
-        }
-
-        try {
+            questionData.acceptableAnswers = acceptableAnswers.filter(answer => answer.trim());
+        }        try {
             setLoading(true);
             if (isNew) {
+                console.log("Creating new question:", questionData);
                 await quizzesClient.addQuestion(qid!, questionData);
             } else {
-                await quizzesClient.updateQuestion(questionData);
+                const updateData = {
+                    ...questionData,
+                    _id: currentQuestionId!
+                };
+                console.log("Updating question:", updateData);
+                console.log("Current question ID:", currentQuestionId);
+                await quizzesClient.updateQuestion(updateData);
             }
             navigate(`/Kambaz/Courses/${cid}/Quizzes/${qid}/questions`);
         } catch (error) {
