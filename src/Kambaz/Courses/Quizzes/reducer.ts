@@ -12,6 +12,13 @@ export interface Quiz {
   totalPoints?: number;
   questionCount?: number;
   courseId?: string;
+  multipleAttempts?: boolean;
+  attemptsAllowed?: number;
+  shuffleAnswers?: boolean;
+  lockQuestions?: boolean;
+  accessCode?: string;
+  oneQuestionAtTime?: boolean;
+  webcamRequired?: boolean;
 }
 
 interface QuizState {

@@ -13,6 +13,7 @@ import QuizEditor from "./Quizzes/Editor";
 import QuizDetails from "./Quizzes/Details";
 import Questions from "./Quizzes/Questions";
 import QuestionEditor from "./Quizzes/QuestionEditor";
+import QuizTaking from "./Quizzes/QuizTaking";
 import * as courseClient from "./client";
 import { setCourses } from "./reducer";
 
@@ -83,6 +84,7 @@ export default function Courses() {
             <Route path="Quizzes/:qid/questions" element={<Questions />} />
             <Route path="Quizzes/:qid/question-new" element={<QuestionEditor />} />
             <Route path="Quizzes/:qid/question-edit/:questionId" element={<QuestionEditor />} />
+            <Route path="Quizzes/:qid/take" element={<QuizTaking />} />
             <Route path="Quizzes/:qid" element={<QuizDetails />} />
           </Routes>
         </div>

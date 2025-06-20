@@ -9,13 +9,16 @@ import { FaSearch } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { IoTrash } from "react-icons/io5";
 import { deleteQuiz, fetchQuizzesSuccess, fetchQuizzesFailure } from "./reducer";
+import './QuizTaking.css';
 
 export default function Quizzes() {
     const { cid } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [toDelete, setToDelete] = useState<string | null>(null);
-    const { list: quizzes } = useSelector((state: any) => state.quizzesReducer);    
+    const { list: quizzes } = useSelector((state: any) => state.quizzesReducer);    const { currentUser } = useSelector((state: any) => state.accountReducer);
+    
+    const isFaculty = currentUser?.role === "FACULTY";
     const fetchQuizzes = async () => {
         try {
             const quizzesData = await quizzesClient.fetchQuizzesForCourse(cid as string);
@@ -27,9 +30,7 @@ export default function Quizzes() {
     useEffect(() => {
         fetchQuizzes();
     }, []);
-    const courseQuizzes = quizzes;
-
-    return (
+    const courseQuizzes = quizzes;    return (
         <div id="wd-quizzes">
             <div className="mb-3">
                 <FaSearch className="position-absolute text-secondary"/>
@@ -40,47 +41,64 @@ export default function Quizzes() {
                     style={{ width: 250 }}
                 />
                 
-                <button 
-                    id="wd-add-quiz"
-                    className="btn btn-danger float-end"
-                    onClick={() => navigate(`/Kambaz/Courses/${cid}/Quizzes/Create`)}
-                >
-                    + Quiz
-                </button>
+                {isFaculty && (
+                    <button 
+                        id="wd-add-quiz"
+                        className="btn btn-danger float-end"
+                        onClick={() => navigate(`/Kambaz/Courses/${cid}/Quizzes/Create`)}
+                    >
+                        + Quiz
+                    </button>
+                )}
             </div>
 
             <ListGroup className="rounded-0">
                 <ListGroup.Item className="wd-module p-0 mb-5 fs-5 border-gray">
                     <div className="wd-title p-3 ps-2 bg-secondary d-flex align-items-center">
-                        <MdDragIndicator className="me-2 fs-3" />                        <span className="fw-bold flex-grow-1">
+                        <MdDragIndicator className="me-2 fs-3" />
+                        <span className="fw-bold flex-grow-1">
                             QUIZZES
                         </span>
                         <QuizControlButtons published={false} />
                     </div>
 
                     <ListGroup className="wd-quizzes rounded-0">
-                        {courseQuizzes.map((quiz: any) => (
-                            <ListGroup.Item key={quiz._id} className="p-3 ps-1 d-flex align-items-center wd-quiz">
+                        {courseQuizzes.map((quiz: any) => (<ListGroup.Item key={quiz._id} className="p-3 ps-1 d-flex align-items-center wd-quiz">
                                 <MdDragIndicator className="me-2 fs-3" />
                                 <span className="flex-grow-1">
                                     <Link
-                                        to={`/Kambaz/Courses/${cid}/Quizzes/${quiz._id}`}
-                                        className="wd-quiz-link"
+                                        to={
+                                            isFaculty 
+                                                ? `/Kambaz/Courses/${cid}/Quizzes/${quiz._id}` 
+                                                : `/Kambaz/Courses/${cid}/Quizzes/${quiz._id}/take`
+                                        }
+                                        className="quiz-title-link"
+                                        style={{ 
+                                            textDecoration: 'none', 
+                                            color: quiz.published || isFaculty ? 'inherit' : '#6c757d' 
+                                        }}
                                     >
-                                        {quiz.title}
-                                    </Link>
-                                    <br />
-                                    <h6>
-                                        {quiz.description?.slice(0, 30)}… | {quiz.totalPoints || 0} pts
-                                        <br />
-                                        {quiz.published ? "Published" : "Not Published"} | Due {quiz.dueDate || "No due date"}
-                                    </h6>                                </span>
-                                <QuizControlButtons published={quiz.published} />
-                                <IoTrash
-                                    className="fs-4 text-danger ms-2"
-                                    style={{ cursor: "pointer" }}
-                                    onClick={() => setToDelete(quiz._id)}
-                                />
+                                        <div className="fw-bold">{quiz.title}</div>
+                                    </Link>                                    <div className="text-muted quiz-info-text mt-1">
+                                        <div>
+                                            {quiz.description ? quiz.description.slice(0, 50) + (quiz.description.length > 50 ? '...' : '') : 'No description'} | {quiz.totalPoints || 0} pts
+                                        </div>
+                                        <div className="mt-1">
+                                            <span className={`badge ${quiz.published ? 'bg-success' : 'bg-warning'}`}>
+                                                {quiz.published ? "Published" : "Not Published"}
+                                            </span>
+                                            <span className="ms-2">Due {quiz.dueDate ? new Date(quiz.dueDate).toLocaleDateString() : 'No due date'}</span>
+                                        </div>
+                                    </div>
+                                </span>
+                                {isFaculty && <QuizControlButtons published={quiz.published} />}
+                                {isFaculty && (
+                                    <IoTrash
+                                        className="fs-4 text-danger ms-2"
+                                        style={{ cursor: "pointer" }}
+                                        onClick={() => setToDelete(quiz._id)}
+                                    />
+                                )}
                             </ListGroup.Item>
                         ))}
 

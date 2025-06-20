@@ -10,9 +10,12 @@ export default function QuizDetails() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [questionCount, setQuestionCount] = useState<number>(0);
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
   const quiz = useSelector((state: any) => 
     state.quizzesReducer.list.find((q: any) => q._id === qid)
-  );  
+  );
+  
+  const isFaculty = currentUser?.role === "FACULTY";
   useEffect(() => {
     if (!quiz && qid) {
       const fetchQuiz = async () => {
@@ -28,7 +31,6 @@ export default function QuizDetails() {
     }
   }, [qid, quiz, dispatch]);
 
-  // Fetch question count
   useEffect(() => {
     if (qid) {
       const fetchQuestionCount = async () => {
@@ -58,15 +60,24 @@ export default function QuizDetails() {
   };
 
   return (
-    <Container className="py-4" id="wd-quiz-details">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+    <Container className="py-4" id="wd-quiz-details">      <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>{quiz.title}</h2>
-        <Button 
-          variant="primary" 
-          onClick={() => navigate(`/Kambaz/Courses/${cid}/Quizzes/${qid}/edit`)}
-        >
-          Edit
-        </Button>
+        {isFaculty ? (
+          <Button 
+            variant="primary" 
+            onClick={() => navigate(`/Kambaz/Courses/${cid}/Quizzes/${qid}/edit`)}
+          >
+            Edit
+          </Button>
+        ) : (
+          <Button 
+            variant="success" 
+            size="lg"
+            onClick={() => navigate(`/Kambaz/Courses/${cid}/Quizzes/${qid}/take`)}
+          >
+            Take Quiz
+          </Button>
+        )}
       </div>
       <div className="mb-3">
         <Badge bg={quiz.published ? 'success' : 'secondary'}>
@@ -120,45 +131,47 @@ export default function QuizDetails() {
         </Card.Body>
       </Card>
       <Card className="mt-3">
-        <Card.Body>
-          <div className="d-flex justify-content-between align-items-center mb-3">
+        <Card.Body>          <div className="d-flex justify-content-between align-items-center mb-3">
             <h5>Questions</h5>
-            <Button 
-              variant="outline-primary" 
-              size="sm"
-              onClick={() => navigate(`/Kambaz/Courses/${cid}/Quizzes/${qid}/questions`)}
-            >
-              Manage Questions
-            </Button>
-          </div>          <p className="text-muted">
+            {isFaculty && (
+              <Button 
+                variant="outline-primary" 
+                size="sm"
+                onClick={() => navigate(`/Kambaz/Courses/${cid}/Quizzes/${qid}/questions`)}
+              >
+                Manage Questions
+              </Button>
+            )}
+          </div><p className="text-muted">
             This quiz has {questionCount} questions.
           </p>
         </Card.Body>
-      </Card>
-      <div className="mt-4 d-flex gap-2">
+      </Card>      <div className="mt-4 d-flex gap-2">
         <Button 
           variant="secondary" 
           onClick={() => navigate(`/Kambaz/Courses/${cid}/Quizzes`)}
         >
           Back to Quizzes
         </Button>
-        <Button 
-          variant={quiz.published ? 'warning' : 'success'}
-          onClick={async () => {
-            try {
-              if (quiz.published) {
-                await quizzesClient.unpublishQuiz(qid!);
-              } else {
-                await quizzesClient.publishQuiz(qid!);
+        {isFaculty && (
+          <Button 
+            variant={quiz.published ? 'warning' : 'success'}
+            onClick={async () => {
+              try {
+                if (quiz.published) {
+                  await quizzesClient.unpublishQuiz(qid!);
+                } else {
+                  await quizzesClient.publishQuiz(qid!);
+                }
+                window.location.reload();
+              } catch (error) {
+                console.error('Error toggling publish status:', error);
               }
-              window.location.reload();
-            } catch (error) {
-              console.error('Error toggling publish status:', error);
-            }
-          }}
-        >
-          {quiz.published ? 'Unpublish' : 'Publish'}
-        </Button>
+            }}
+          >
+            {quiz.published ? 'Unpublish' : 'Publish'}
+          </Button>
+        )}
       </div>
     </Container>
   );

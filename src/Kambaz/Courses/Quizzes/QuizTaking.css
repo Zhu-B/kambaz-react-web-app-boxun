@@ -1,0 +1,248 @@
+.quiz-taking-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.quiz-timer {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.quiz-timer.warning {
+  color: #dc3545;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+.quiz-progress {
+  height: 8px;
+}
+
+.question-card {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.question-navigator {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.question-nav-button {
+  min-width: 40px;
+  height: 40px;
+  margin: 2px;
+  border-radius: 50%;
+}
+
+.quiz-submission-summary {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.quiz-info-card {
+  background: #f8f9fa;
+  border-left: 4px solid #007bff;
+  padding: 15px;
+  margin: 15px 0;
+}
+
+.quiz-warning-card {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  padding: 15px;
+  margin: 15px 0;
+}
+
+.quiz-list-item {
+  transition: all 0.2s ease;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.quiz-list-item:hover {
+  background-color: #f8f9fa;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.quiz-title-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.quiz-title-link:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+.quiz-info-text {
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.answer-status {
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+.answer-status.answered {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.answer-status.unanswered {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+/*qqqqquestion type :)*/
+.multiple-choice-option {
+  padding: 10px;
+  margin: 5px 0;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.multiple-choice-option:hover {
+  background-color: #f8f9fa;
+  border-color: #007bff;
+}
+
+.multiple-choice-option.selected {
+  background-color: #e3f2fd;
+  border-color: #007bff;
+}
+
+.true-false-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.true-false-option {
+  flex: 1;
+  max-width: 200px;
+  padding: 15px;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.true-false-option:hover {
+  border-color: #007bff;
+  background-color: #f8f9fa;
+}
+
+.true-false-option.selected {
+  border-color: #007bff;
+  background-color: #e3f2fd;
+  color: #007bff;
+}
+
+.essay-textarea {
+  min-height: 120px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.numerical-input {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.matching-container {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.question-type-badge {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.question-type-badge.multiple-choice {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.question-type-badge.true-false {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.question-type-badge.fill-in-blank {
+  background-color: #e8f5e8;
+  color: #388e3c;
+}
+
+.question-type-badge.essay {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+.question-type-badge.multiple-select {
+  background-color: #fce4ec;
+  color: #c2185b;
+}
+
+.question-type-badge.numerical {
+  background-color: #e0f2f1;
+  color: #00695c;
+}
+
+.question-type-badge.matching {
+  background-color: #f1f8e9;
+  color: #558b2f;
+}
+
+.question-type-badge.short-answer {
+  background-color: #e8eaf6;
+  color: #3f51b5;
+}
+
+.multiple-select-container {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.checkbox-option {
+  padding: 8px;
+  margin: 4px 0;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.checkbox-option:hover {
+  background-color: #f8f9fa;
+}
+
+.checkbox-option.selected {
+  background-color: #e3f2fd;
+}

@@ -34,7 +34,6 @@ export default function QuizEditor() {
       fetchQuiz();
     }
   }, [isEdit, existing, qid, dispatch]);
-
   const [title, setTitle] = useState(existing?.title || "");
   const [description, setDescription] = useState(existing?.description || "");
   const [published, setPublished] = useState(existing?.published || false);
@@ -42,7 +41,7 @@ export default function QuizEditor() {
   const [dueDate, setDueDate] = useState(existing?.dueDate || "");
   const [timeLimit, setTimeLimit] = useState(existing?.timeLimit || 20);
   const [totalPoints, setTotalPoints] = useState(existing?.totalPoints || 0);
-
+  const [shuffleAnswers, setShuffleAnswers] = useState(existing?.shuffleAnswers !== false);
   useEffect(() => {
     if (existing) {
       setTitle(existing.title || "");
@@ -52,15 +51,16 @@ export default function QuizEditor() {
       setDueDate(existing.dueDate || "");
       setTimeLimit(existing.timeLimit || 20);
       setTotalPoints(existing.totalPoints || 0);
+      setShuffleAnswers(existing.shuffleAnswers !== false);
     }
   }, [existing]);
   async function onSave() {
-    console.log("onSave called - qid:", qid, "isNew:", isNew);
-    const payload = {
+    console.log("onSave called - qid:", qid, "isNew:", isNew);    const payload = {
       _id: isNew ? uuidv4() : qid,
       title,
       description,
       published,
+      shuffleAnswers,
       availableDate: availableDate ? new Date(availableDate).toISOString() : undefined,
       dueDate: dueDate ? new Date(dueDate).toISOString() : undefined,
       timeLimit,
@@ -165,6 +165,14 @@ export default function QuizEditor() {
             type="datetime-local"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
+          />
+        </Form.Group>        <Form.Group className="mb-3">
+          <Form.Check
+            type="checkbox"
+            id="wd-quiz-shuffle-answers"
+            label="Shuffle Answers"
+            checked={shuffleAnswers}
+            onChange={(e) => setShuffleAnswers(e.target.checked)}
           />
         </Form.Group>
 
